@@ -12,7 +12,7 @@
 
 module Test.Tasty.Inspection.Plugin (plugin) where
 
-import Control.Monad (when, foldM)
+import Control.Monad (foldM)
 import qualified Language.Haskell.TH.Syntax as TH
 import System.Exit (exitFailure)
 
@@ -26,6 +26,10 @@ import GhcPlugins
 import GHC.Types.TyThing
 #endif
 
+#if !MIN_VERSION_ghc(9,3,0)
+import Control.Monad (when)
+#endif
+
 import Test.Inspection (Obligation(..))
 import qualified Test.Inspection.Plugin as P (checkProperty, CheckResult(..))
 import Test.Tasty.Inspection.Internal (CheckResult(..))
@@ -36,7 +40,7 @@ import Test.Tasty.Inspection.Internal (CheckResult(..))
 plugin :: Plugin
 plugin = defaultPlugin
     { installCoreToDos = install
-#if __GLASGOW_HASKELL__ >= 806
+#if MIN_VERSION_ghc(8,6,0)
     , pluginRecompile = \_args -> pure NoForceRecompile
 #endif
     }
@@ -96,13 +100,15 @@ resultToExpr (P.ResFailure sdoc) = do
 
 proofPass :: ModGuts -> CoreM ModGuts
 proofPass guts = do
+#if !MIN_VERSION_ghc(9,3,0)
     dflags <- getDynFlags
     when (optLevel dflags < 1) $ warnMsg
-#if MIN_VERSION_GLASGOW_HASKELL(8,9,0,0)
+#if MIN_VERSION_ghc(8,9,0)
         NoReason
 #endif
         $ fsep $ map text
         $ words "Test.Inspection: Compilation without -O detected. Expect optimizations to fail."
+#endif
     uncurry (foldM checkObligation) (extractObligations guts)
 
 partitionMaybe :: (a -> Maybe b) -> [a] -> ([a], [b])
