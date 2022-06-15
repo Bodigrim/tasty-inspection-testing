@@ -22,6 +22,9 @@ module Test.Tasty.Inspection
   , Property(..)
   , (===)
   , (==-)
+#if MIN_VERSION_inspection_testing(0,5,0)
+  , (==~)
+#endif
   , hasNoType
   , hasNoTypes
   , hasNoGenerics
@@ -41,6 +44,9 @@ import Language.Haskell.TH.Syntax (addCorePlugin)
 
 import Test.Tasty.Runners (TestTree(..))
 import Test.Inspection (Obligation(..), testName, mkObligation, Property(..), (===), (==-), hasNoType, hasNoGenerics, hasNoTypeClasses, hasNoTypeClassesExcept, doesNotUse, coreOf)
+#if MIN_VERSION_inspection_testing(0,5,0)
+import Test.Inspection ((==~))
+#endif
 import Test.Inspection.Plugin (prettyProperty)
 import Test.Tasty.Inspection.Internal (CheckResult)
 

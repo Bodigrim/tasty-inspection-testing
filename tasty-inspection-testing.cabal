@@ -1,5 +1,5 @@
 name:          tasty-inspection-testing
-version:       0.1.0.1
+version:       0.2
 cabal-version: 1.18
 build-type:    Simple
 license:       MIT
@@ -29,7 +29,7 @@ library
   other-modules:    Test.Tasty.Inspection.Internal
   build-depends:    base < 4.18,
                     ghc,
-                    inspection-testing >= 0.4.5 && < 0.5,
+                    inspection-testing >= 0.5 && < 0.6,
                     tasty,
                     template-haskell
   hs-source-dirs:   src
