@@ -29,4 +29,4 @@ Real world examples:
 * https://hackage.haskell.org/package/linear-base-0.2.0/src/test/Test/Data/V.hs
 * https://hackage.haskell.org/package/text-2.0/src/tests/Tests/Properties/LowLevel.hs
 * https://hackage.haskell.org/package/text-1.2.5.0/src/tests/Tests/Inspection/Strict.hs
-* https://github.com/konn/sized/blob/676c2b81e55e708e7938acdf8c4d7db68db1c1cb/test/opt-test.hs
+* https://hackage.haskell.org/package/sized-1.0.0.1/src/test/opt-test.hs
