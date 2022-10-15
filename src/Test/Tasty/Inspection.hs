@@ -7,9 +7,9 @@
 -- Integrate @inspection-testing@ into @tasty@ test suites.
 --
 
-{-# LANGUAGE CPP             #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE CPP                   #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TemplateHaskellQuotes #-}
 
 module Test.Tasty.Inspection
   ( inspectTest
@@ -74,7 +74,7 @@ didNotRunPluginError = lazy (error "Test.Tasty.Inspection.Plugin did not run")
 -- > main :: IO ()
 -- > main = defaultMain $(inspectTest $ 'lhs === 'rhs)
 --
--- This is not the same function as 'Test.Inspection.inspectTest':
+-- This is not the same function as @Test.Inspection.@'Test.Inspection.inspectTest':
 -- both return 'Q' 'Exp', but this one represents 'TestTree'
 -- instead of 'Test.Inspection.Result'.
 --
@@ -83,7 +83,7 @@ didNotRunPluginError = lazy (error "Test.Tasty.Inspection.Plugin did not run")
 --
 -- > inspectTest (obl { testName = Just "foo" })
 --
--- To invert an obligation apply 'Test.Tasty.ExpectedFailure.expectFail'.
+-- To invert an obligation apply @<https://hackage.haskell.org/package/tasty-expected-failure/docs/Test-Tasty-ExpectedFailure.html#v:expectFail Test.Tasty.ExpectedFailure.expectFail>@.
 --
 inspectTest :: Obligation -> Q Exp
 inspectTest obl = do
@@ -93,7 +93,7 @@ inspectTest obl = do
     nameS   <- genName
     name    <- newUniqueName nameS
     annExpr <- liftData obl
-    addTopDecls $
+    addTopDecls
         [ SigD name (ConT ''CheckResult)
         , ValD (VarP name) (NormalB (VarE 'didNotRunPluginError)) []
         , PragmaD (InlineP name NoInline FunLike AllPhases)

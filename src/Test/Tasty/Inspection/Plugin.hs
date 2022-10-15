@@ -4,15 +4,14 @@
 -- Licence:     MIT
 -- Maintainer:  andrew.lelechenko@gmail.com
 --
-{-# LANGUAGE CPP             #-}
-{-# LANGUAGE LambdaCase      #-}
-{-# LANGUAGE MultiWayIf      #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TupleSections   #-}
+{-# LANGUAGE CPP                   #-}
+{-# LANGUAGE LambdaCase            #-}
+{-# LANGUAGE MultiWayIf            #-}
+{-# LANGUAGE TemplateHaskellQuotes #-}
+{-# LANGUAGE TupleSections         #-}
 
 module Test.Tasty.Inspection.Plugin (plugin) where
 
-import Control.Monad (foldM)
 import qualified Language.Haskell.TH.Syntax as TH
 import System.Exit (exitFailure)
 
@@ -26,8 +25,10 @@ import GhcPlugins
 import GHC.Types.TyThing
 #endif
 
-#if !MIN_VERSION_ghc(9,3,0)
-import Control.Monad (when)
+#if MIN_VERSION_ghc(9,3,0)
+import Control.Monad (foldM)
+#else
+import Control.Monad (foldM, when)
 #endif
 
 import Test.Inspection (Obligation(..))
@@ -79,7 +80,7 @@ fromTHName :: TH.Name -> CoreM Name
 fromTHName thn = thNameToGhcName thn >>= \case
     Nothing -> do
         errorMsg $ text "Could not resolve TH name" <+> text (show thn)
-        liftIO $ exitFailure -- kill the compiler. Is there a nicer way?
+        liftIO exitFailure -- kill the compiler. Is there a nicer way?
     Just n -> pure n
 
 dcExpr :: TH.Name -> CoreM CoreExpr
