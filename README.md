@@ -31,3 +31,4 @@ Real world examples:
 * https://hackage.haskell.org/package/text-1.2.5.0/src/tests/Tests/Inspection/Strict.hs
 * https://hackage.haskell.org/package/sized-1.0.0.1/src/test/opt-test.hs
 * https://hackage.haskell.org/package/vector-0.13.0.0/src/tests-inspect/Inspect/DerivingVia.hs
+* https://hackage.haskell.org/package/infinite-list-0.1/src/test/Fusion.hs
