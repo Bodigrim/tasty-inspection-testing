@@ -9,15 +9,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        ghc: ['9.6', '9.4', '9.2', '9.0', '8.10', '8.8', '8.6', '8.4', '8.2', '8.0']
+        ghc: ['9.8', '9.6', '9.4', '9.2', '9.0', '8.10', '8.8', '8.6', '8.4', '8.2', '8.0']
     steps:
-    - uses: actions/checkout@v3
-    - uses: haskell/actions/setup@v2
+    - uses: actions/checkout@v4
+    - uses: haskell-actions/setup@v2.6
       id: setup-haskell-cabal
       with:
         ghc-version: ${{ matrix.ghc }}
         cabal-version: 'latest'
-    - uses: actions/cache@v3.0.2
+    - uses: actions/cache@v4
       name: Cache cabal stuff
       with:
         path: |
@@ -29,7 +29,7 @@ jobs:
     - name: Build
       run: cabal build
     - name: Haddock
-      if: ${{ matrix.ghc != '8.0' && matrix.ghc != '8.2' }}
+      if: ${{ matrix.ghc != '8.0' && matrix.ghc != '8.2' && matrix.ghc != '8.4' }}
       run: cabal haddock
     - name: Check
       run: cabal check
