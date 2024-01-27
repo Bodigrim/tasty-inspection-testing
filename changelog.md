@@ -1,3 +1,7 @@
+# 0.2.1
+
+* Skip inspection tests if executed under ghci.
+
 # 0.2
 
 * Support `inspection-testing-0.5`.

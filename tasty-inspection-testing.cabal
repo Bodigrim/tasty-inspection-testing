@@ -1,5 +1,5 @@
 name:          tasty-inspection-testing
-version:       0.2
+version:       0.2.1
 cabal-version: 1.18
 build-type:    Simple
 license:       MIT
