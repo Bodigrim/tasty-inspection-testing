@@ -12,6 +12,7 @@
 
 module Test.Tasty.Inspection.Plugin (plugin) where
 
+import Control.Monad (foldM)
 import qualified Language.Haskell.TH.Syntax as TH
 import System.Exit (exitFailure)
 
@@ -25,15 +26,15 @@ import GhcPlugins
 import GHC.Types.TyThing
 #endif
 
-#if MIN_VERSION_ghc(9,3,0)
-import Control.Monad (foldM)
-#else
-import Control.Monad (foldM, when)
-#endif
-
 import Test.Inspection (Obligation(..))
 import qualified Test.Inspection.Plugin as P (checkProperty, CheckResult(..))
 import Test.Tasty.Inspection.Internal (CheckResult(..))
+
+#if MIN_VERSION_ghc(9,6,0)
+import GHC.Driver.Backend (backendForcesOptimization0)
+#elif MIN_VERSION_ghc(9,2,0)
+import GHC.Driver.Backend (Backend(Interpreter))
+#endif
 
 -- | The plugin for inspection testing.
 -- You normally do not need to touch it yourself,
@@ -97,20 +98,21 @@ resultToExpr (P.ResSuccessWithMessage sdoc) = do
     App <$> dcExpr 'ResSuccessWithMessage <*> mkStringExpr (showSDoc dflags sdoc)
 resultToExpr (P.ResFailure sdoc) = do
     dflags <- getDynFlags
-    App <$> dcExpr 'ResFailure <*> mkStringExpr (showSDoc dflags sdoc)
+    if ghciDetected dflags
+        then App <$> dcExpr 'ResSuccessWithMessage <*> mkStringExpr "Skipped because ghci forces -O0"
+        else App <$> dcExpr 'ResFailure <*> mkStringExpr (showSDoc dflags sdoc)
+
+ghciDetected :: DynFlags -> Bool
+#if MIN_VERSION_ghc(9,6,0)
+ghciDetected = backendForcesOptimization0 . backend
+#elif MIN_VERSION_ghc(9,2,0)
+ghciDetected = (== Interpreter) . backend
+#else
+ghciDetected = (< 1) . optLevel
+#endif
 
 proofPass :: ModGuts -> CoreM ModGuts
-proofPass guts = do
-#if !MIN_VERSION_ghc(9,3,0)
-    dflags <- getDynFlags
-    when (optLevel dflags < 1) $ warnMsg
-#if MIN_VERSION_ghc(8,9,0)
-        NoReason
-#endif
-        $ fsep $ map text
-        $ words "Test.Inspection: Compilation without -O detected. Expect optimizations to fail."
-#endif
-    uncurry (foldM checkObligation) (extractObligations guts)
+proofPass = uncurry (foldM checkObligation) . extractObligations
 
 partitionMaybe :: (a -> Maybe b) -> [a] -> ([a], [b])
 partitionMaybe f = foldr go ([], [])
